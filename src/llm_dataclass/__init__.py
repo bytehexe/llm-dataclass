@@ -34,11 +34,6 @@ def find_document(xml: str, root: str) -> str:
         raise ValueError(f"Tag <{root}> not found in the provided XML.")
 
 
-def parse_response(resonse: str, root: str) -> dict:
-    document = find_document(resonse, root)
-    return xmltodict.parse(document)
-
-
 def _validate_type_construction(field_type: Any, field_name: str) -> None:
     """Validate that type constructions are supported (no nested Optional/List combinations)."""
     origin = get_origin(field_type)
@@ -166,7 +161,7 @@ class Schema(Generic[T]):
     def loads(self, xml: str) -> T:
         """Parse XML string into an instance of the dataclass type."""
         document = find_document(xml, self.root)
-        data_dict = xmltodict.parse(document)[self.root]
+        data_dict = xmltodict.parse(document, xml_attribs=False)[self.root]
         return self._dict_to_dataclass(self.dataclass_type, data_dict)
 
     def _dict_to_dataclass(self, cls: Type[T], data: dict) -> T:
