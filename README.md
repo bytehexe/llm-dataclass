@@ -20,6 +20,7 @@ A Python library that provides a dataclass interface for working with XML schema
   - [Nested Dataclasses](#nested-dataclasses)
   - [Optional Fields](#optional-fields)
   - [Custom XML Field Names](#custom-xml-field-names)
+  - [Handling Extra Data](#handling-extra-data)
 - [Type Support](#type-support)
 - [Limitations](#limitations)
 - [Contributing](#contributing)
@@ -260,6 +261,14 @@ class Book:
 schema = llm_dataclass.Schema(Book)
 # Will use <author> instead of <author_name> in XML
 ```
+
+### Handling Extra Data
+
+The library is designed to be robust when working with LLM responses:
+
+- **Extra text before/after XML**: Automatically extracts XML from responses containing additional explanatory text
+- **Extra XML elements**: Ignores XML elements that don't correspond to dataclass fields
+- **Flexible parsing**: Only extracts the specific data defined in your dataclass schema
 
 ## Type Support
 
