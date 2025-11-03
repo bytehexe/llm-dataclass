@@ -43,6 +43,10 @@ pip install llm-dataclass
 
 ## Quick Start
 
+### Parsing XML to Dataclass Objects
+
+Parse XML responses from LLMs into strongly-typed Python objects:
+
 ```python
 from dataclasses import dataclass
 import llm_dataclass
@@ -52,32 +56,78 @@ class Person:
     name: str
     age: int
 
-# Create a schema
-schema = llm_dataclass.Schema(Person)
-
-# Generate XML template for LLM prompts
-xml_template = schema.dumps()
-print(xml_template)
-# Output:
-# <Person>
-#   <name>...</name>
-#   <age>...</age>
-# </Person>
+# Create a schema with custom root element name
+schema = llm_dataclass.Schema(Person, root="user")
 
 # Parse XML response from LLM
 xml_response = """
 This is your response:
 
-<Person>
+<user>
   <name>John Doe</name>
   <age>30</age>
-</Person>
+</user>
 
 Let me know if you need anything else.
 """
 
 person = schema.loads(xml_response)
 print(person)  # Person(name='John Doe', age=30)
+```
+
+### Generating XML Templates for Prompts
+
+Generate XML templates to include in LLM prompts as response format examples:
+
+```python
+from dataclasses import dataclass
+import llm_dataclass
+
+@dataclass
+class Person:
+    name: str
+    age: int
+
+# Create schema with custom root - useful when you want specific XML tag names
+schema = llm_dataclass.Schema(Person, root="employee")
+
+# Generate empty XML template for LLM prompts
+xml_template = schema.dumps()
+print(xml_template)
+# Output:
+# <employee>
+#   <name>...</name>
+#   <age>...</age>
+# </employee>
+```
+
+### Serializing Dataclass Instances to XML
+
+Convert Python dataclass instances into XML format:
+
+```python
+from dataclasses import dataclass
+import llm_dataclass
+
+@dataclass
+class Person:
+    name: str
+    age: int
+
+# Use default root (dataclass name) or specify custom root
+schema = llm_dataclass.Schema(Person, root="contact")
+
+# Create a dataclass instance
+person = Person(name="Alice Smith", age=25)
+
+# Serialize to XML
+xml_output = schema.dumps(person)
+print(xml_output)
+# Output:
+# <contact>
+#   <name>Alice Smith</name>
+#   <age>25</age>
+# </contact>
 ```
 
 ## Usage
