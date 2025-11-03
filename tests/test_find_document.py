@@ -1,9 +1,11 @@
-from llm_dataclass import find_document
 import re
+
 import pytest
 
-def test_find_document():
+from llm_dataclass import find_document
 
+
+def test_find_document():
     xml = """<root>
     <child>Content</child>
     </root>"""
@@ -11,22 +13,22 @@ def test_find_document():
     re_expected = re.compile(r"<root[^>]*>.*?</root>", re.DOTALL)
     assert re_expected.fullmatch(result)
 
-def test_find_document_in_text():
 
+def test_find_document_in_text():
     xml = """
     This is your document:
     <root>
     <child>Content</child>
     </root>
-    
+
     Let me know if you need anything else.
     """
     result = find_document(xml, "root")
     re_expected = re.compile(r"<root[^>]*>.*?</root>", re.DOTALL)
     assert re_expected.fullmatch(result)
 
-def test_find_document_not_found():
 
+def test_find_document_not_found():
     xml = """<root>
     <child>Content</child>
     </root>"""
@@ -35,19 +37,19 @@ def test_find_document_not_found():
     except ValueError as e:
         assert str(e) == "Tag <nonexistent> not found in the provided XML."
     else:
-        assert False, "Expected ValueError was not raised."
+        raise AssertionError("Expected ValueError was not raised.")
+
 
 def test_find_document_with_attributes():
-
     xml = """<root attr="value">
     <child>Content</child>
     </root>"""
     result = find_document(xml, "root")
-    re_expected = re.compile(r'<root[^>]*>.*?</root>', re.DOTALL)
+    re_expected = re.compile(r"<root[^>]*>.*?</root>", re.DOTALL)
     assert re_expected.fullmatch(result)
 
-def test_find_document_multiple_tags():
 
+def test_find_document_multiple_tags():
     xml = """<root>
     <child>Content</child>
     </root>

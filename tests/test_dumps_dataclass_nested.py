@@ -1,10 +1,10 @@
 from dataclasses import dataclass, field
 from textwrap import dedent
+
 import llm_dataclass
-import pytest
+
 
 def test_dataclass_nested():
-
     @dataclass
     class Address:
         street: str
@@ -29,8 +29,8 @@ def test_dataclass_nested():
 
     assert schema.dumps() == expected_schema
 
+
 def test_dataclass_nested_with_instance():
-    
     @dataclass
     class Address:
         street: str
@@ -58,8 +58,8 @@ def test_dataclass_nested_with_instance():
 
     assert schema.dumps(person_instance) == expected_schema
 
-def test_dataclass_nested_array():
 
+def test_dataclass_nested_array():
     @dataclass
     class Pet:
         name: str
@@ -86,8 +86,8 @@ def test_dataclass_nested_array():
 
     assert schema.dumps() == expected_schema
 
-def test_dataclass_nested_array_with_instance():
 
+def test_dataclass_nested_array_with_instance():
     @dataclass
     class Pet:
         name: str

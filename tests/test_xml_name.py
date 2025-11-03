@@ -1,5 +1,6 @@
 def test_xml_name_loading():
     from dataclasses import dataclass, field
+
     import llm_dataclass
 
     @dataclass
@@ -16,9 +17,11 @@ def test_xml_name_loading():
     person_instance = schema.loads(xml_input)
     assert person_instance == Person(full_name="John Doe", age=30)
 
+
 def test_xml_name_dumping():
     from dataclasses import dataclass, field
     from textwrap import dedent
+
     import llm_dataclass
 
     @dataclass
@@ -36,8 +39,10 @@ def test_xml_name_dumping():
     person_instance = Person(full_name="John Doe", age=30)
     assert schema.dumps(person_instance) == expected_schema
 
+
 def test_xml_name_loading_dataclass_array():
     from dataclasses import dataclass, field
+
     import llm_dataclass
 
     @dataclass
@@ -56,9 +61,11 @@ def test_xml_name_loading_dataclass_array():
     person_instance = schema.loads(xml_input)
     assert person_instance == Person(name="Jane Doe", pets=["Fluffy", "Spot"])
 
+
 def test_xml_name_dumping_dataclass_array():
     from dataclasses import dataclass, field
     from textwrap import dedent
+
     import llm_dataclass
 
     @dataclass
@@ -75,4 +82,4 @@ def test_xml_name_dumping_dataclass_array():
     </Person>""")
 
     person_instance = Person(name="Jane Doe", pets=["Fluffy", "Spot"])
-    assert schema.dumps(person_instance) == expected_schema 
+    assert schema.dumps(person_instance) == expected_schema

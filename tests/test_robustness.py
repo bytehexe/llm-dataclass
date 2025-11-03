@@ -1,12 +1,11 @@
-import pytest
-import llm_dataclass
-from typing import Optional, List
 from dataclasses import dataclass, field
 from textwrap import dedent
+from typing import List, Optional
+
 import llm_dataclass
 
-def test_list_type():
 
+def test_list_type():
     @dataclass
     class Person:
         name: str
@@ -23,8 +22,8 @@ def test_list_type():
     person_instance = schema.loads(xml_input)
     assert person_instance == Person(name="Alice", scores=[85, 90, 95])
 
-def test_optional_field():
 
+def test_optional_field():
     @dataclass
     class Person:
         name: str
@@ -39,8 +38,8 @@ def test_optional_field():
     person_with_nickname = schema.loads(xml_input_with_nickname)
     assert person_with_nickname == Person(name="Bob", nickname="Bobby")
 
-def test_optional_field_missing():
 
+def test_optional_field_missing():
     @dataclass
     class Person:
         name: str
@@ -54,8 +53,8 @@ def test_optional_field_missing():
     person_without_nickname = schema.loads(xml_input_without_nickname)
     assert person_without_nickname == Person(name="Bob", nickname=None)
 
-def optional_dataclass_field_dumping():
 
+def optional_dataclass_field_dumping():
     @dataclass
     class Person:
         name: str
@@ -71,8 +70,8 @@ def optional_dataclass_field_dumping():
     person_instance = Person(name="John Doe", nickname="Johnny")
     assert schema.dumps(person_instance) == expected_schema
 
-def optional_dataclass_field_loading():
 
+def optional_dataclass_field_loading():
     @dataclass
     class Person:
         name: str
@@ -87,8 +86,8 @@ def optional_dataclass_field_loading():
     person_instance = schema.loads(xml_input)
     assert person_instance == Person(name="John Doe", nickname="Johnny")
 
-def optional_dataclass_field_loading_missing():
 
+def optional_dataclass_field_loading_missing():
     @dataclass
     class Person:
         name: str
@@ -108,11 +107,11 @@ def optional_dataclass_field_loading_missing():
   <name>John Doe</name>
 </Person>"""
 
+
 # now same for dumps
 
+
 def test_list_dump():
-
-
     @dataclass
     class Person:
         name: str
@@ -128,8 +127,8 @@ def test_list_dump():
 
     assert schema.dumps() == expected_schema
 
-def test_list_dump_with_instance():
 
+def test_list_dump_with_instance():
     @dataclass
     class Person:
         name: str
@@ -147,8 +146,8 @@ def test_list_dump_with_instance():
     person_instance = Person(name="Alice", scores=[85, 90, 95])
     assert schema.dumps(person_instance) == expected_schema
 
-def test_optional_field_dump():
 
+def test_optional_field_dump():
     @dataclass
     class Person:
         name: str
@@ -163,9 +162,8 @@ def test_optional_field_dump():
 
     assert schema.dumps() == expected_schema
 
+
 def test_optional_dataclass_nested_dumping():
-
-
     @dataclass
     class Address:
         street: str

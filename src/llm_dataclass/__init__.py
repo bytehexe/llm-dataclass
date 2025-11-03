@@ -1,15 +1,27 @@
-import re
-import xmltodict
 import dataclasses
-from typing import Type, TypeVar, Generic, Optional, Union
-from typing import List, get_origin, get_args, Any
-from typing import TYPE_CHECKING
+import re
+from typing import (
+    TYPE_CHECKING,
+    Any,
+    Generic,
+    List,
+    Optional,
+    Type,
+    TypeVar,
+    Union,
+    get_args,
+    get_origin,
+)
+
+import xmltodict
 
 if TYPE_CHECKING:
     from _typeshed import DataclassInstance
+
     T = TypeVar("T", bound=DataclassInstance)
 else:
     T = TypeVar("T")
+
 
 def find_document(xml: str, root: str) -> str:
     pattern = f"(<{root}[^>]*>.*?</{root}>)"
@@ -20,7 +32,8 @@ def find_document(xml: str, root: str) -> str:
         raise ValueError(f"Multiple <{root}> tags found in the provided XML.")
     else:
         raise ValueError(f"Tag <{root}> not found in the provided XML.")
-    
+
+
 def parse_response(resonse: str, root: str) -> dict:
     document = find_document(resonse, root)
     return xmltodict.parse(document)
@@ -29,7 +42,7 @@ def parse_response(resonse: str, root: str) -> dict:
 def _validate_type_construction(field_type: Any, field_name: str) -> None:
     """Validate that type constructions are supported (no nested Optional/List combinations)."""
     origin = get_origin(field_type)
-    
+
     # Handle Optional[T] (which is Union[T, None])
     if origin is Union:
         args = get_args(field_type)
@@ -38,35 +51,43 @@ def _validate_type_construction(field_type: Any, field_name: str) -> None:
             # Extract the non-None type
             inner_type = args[0] if args[1] is type(None) else args[1]
             inner_origin = get_origin(inner_type)
-            
+
             # Forbid Optional[List[T]]
             if inner_origin in (list, List):
-                raise ValueError(f"Field '{field_name}' has unsupported type Optional[List[T]]. Use List[T] instead and handle None as an empty list.")
-            
+                raise ValueError(
+                    f"Field '{field_name}' has unsupported type Optional[List[T]]. Use List[T] instead and handle None as an empty list."
+                )
+
             # Recursively validate the inner type for nested structures
             if inner_origin is not None:
                 _validate_type_construction(inner_type, field_name)
         else:
             # This is a Union with more than 2 types or not Optional-like
-            raise ValueError(f"Field '{field_name}' has unsupported Union type. Only Optional[T] (Union[T, None]) is supported.")
-    
+            raise ValueError(
+                f"Field '{field_name}' has unsupported Union type. Only Optional[T] (Union[T, None]) is supported."
+            )
+
     # Handle List[T]
     elif origin in (list, List):
         args = get_args(field_type)
         if args:
             item_type = args[0]
             item_origin = get_origin(item_type)
-            
+
             # Forbid List[Optional[T]]
             if item_origin is Union:
                 item_args = get_args(item_type)
                 if len(item_args) == 2 and type(None) in item_args:
-                    raise ValueError(f"Field '{field_name}' has unsupported type List[Optional[T]]. Use Optional[List[T]] instead or handle None items explicitly.")
-            
+                    raise ValueError(
+                        f"Field '{field_name}' has unsupported type List[Optional[T]]. Use Optional[List[T]] instead or handle None items explicitly."
+                    )
+
             # Forbid List[List[T]] - nested lists
             if item_origin in (list, List):
-                raise ValueError(f"Field '{field_name}' has unsupported nested list type List[List[T]]. Nested collections are not supported.")
-            
+                raise ValueError(
+                    f"Field '{field_name}' has unsupported nested list type List[List[T]]. Nested collections are not supported."
+                )
+
             # Recursively validate the item type for other nested structures
             if item_origin is not None and not dataclasses.is_dataclass(item_type):
                 _validate_type_construction(item_type, field_name)
@@ -74,8 +95,12 @@ def _validate_type_construction(field_type: Any, field_name: str) -> None:
 
 class Schema(Generic[T]):
     def __init__(self, dataclass_type: Type[T], root=None):
-        assert dataclasses.is_dataclass(dataclass_type), "Provided type is not a dataclass."
-        assert isinstance(dataclass_type, type), "Provided dataclass_type is not a type."
+        assert dataclasses.is_dataclass(dataclass_type), (
+            "Provided type is not a dataclass."
+        )
+        assert isinstance(dataclass_type, type), (
+            "Provided dataclass_type is not a type."
+        )
 
         # Validate all field types to ensure supported type constructions
         fields = dataclasses.fields(dataclass_type)
@@ -87,7 +112,9 @@ class Schema(Generic[T]):
 
     def dumps(self, instance: Optional[T] = None) -> str:
         """Generate an example XML schema for the dataclass type."""
-        assert instance is None or isinstance(instance, self.dataclass_type), "Provided instance is not of the correct dataclass type."
+        assert instance is None or isinstance(instance, self.dataclass_type), (
+            "Provided instance is not of the correct dataclass type."
+        )
         fields = dataclasses.fields(self.dataclass_type)
         xml = [f"<{self.root}>"]
         for field in fields:
@@ -97,9 +124,11 @@ class Schema(Generic[T]):
         xml.append(f"</{self.root}>")
         return "\n".join(xml)
 
-    def _field_example(self, field_type: Any, field_name: str, value: Optional[object]) -> List[str]:
+    def _field_example(
+        self, field_type: Any, field_name: str, value: Optional[object]
+    ) -> List[str]:
         origin = get_origin(field_type)
-        
+
         # Handle Optional[T] (which is Union[T, None])
         if origin is Union:
             args = get_args(field_type)
@@ -111,8 +140,10 @@ class Schema(Generic[T]):
                 return self._field_example(non_none_type, field_name, value)
             else:
                 # This should not happen due to validation in __init__, but handle gracefully
-                raise ValueError(f"Unsupported Union type for field '{field_name}': {field_type}")
-        
+                raise ValueError(
+                    f"Unsupported Union type for field '{field_name}': {field_type}"
+                )
+
         elif origin in (list, List):
             item_type = get_args(field_type)[0]
             items = value if value is not None else [None, None]
@@ -121,23 +152,23 @@ class Schema(Generic[T]):
             for item in items:
                 xml.extend(self._field_example(item_type, field_name, item))
             return xml
-        
+
         elif dataclasses.is_dataclass(field_type):
             schema = Schema(field_type, root=field_name)  # type: ignore
             instance = value if value is not None else None
             example_xml = schema.dumps(instance)  # type: ignore
             return [f"  {line}" for line in example_xml.splitlines()]
-        
+
         else:
             field_value = str(value) if value is not None else "..."
             return [f"  <{field_name}>{field_value}</{field_name}>"]
-        
+
     def loads(self, xml: str) -> T:
         """Parse XML string into an instance of the dataclass type."""
         document = find_document(xml, self.root)
         data_dict = xmltodict.parse(document)[self.root]
         return self._dict_to_dataclass(self.dataclass_type, data_dict)
-    
+
     def _dict_to_dataclass(self, cls: Type[T], data: dict) -> T:
         init_kwargs = {}
         for field in dataclasses.fields(cls):
@@ -145,7 +176,7 @@ class Schema(Generic[T]):
             field_value = data.get(field_name)
             if field_value is not None:
                 origin = get_origin(field.type)
-                
+
                 # Handle Optional[T] (which is Union[T, None])
                 actual_type = field.type
                 if origin is Union:
@@ -154,23 +185,29 @@ class Schema(Generic[T]):
                         # Extract the non-None type for Optional[T]
                         actual_type = args[0] if args[1] is type(None) else args[1]
                         origin = get_origin(actual_type)
-                
+
                 if origin in (list, List):
                     item_type = get_args(actual_type)[0]
                     if not isinstance(field_value, list):
                         field_value = [field_value]
                     init_kwargs[field.name] = [
-                        self._dict_to_dataclass(item_type, item) if dataclasses.is_dataclass(item_type) else self._call_type(item_type, item)  # type: ignore
+                        self._dict_to_dataclass(item_type, item)
+                        if dataclasses.is_dataclass(item_type)
+                        else self._call_type(item_type, item)  # type: ignore
                         for item in field_value
                     ]
                 elif dataclasses.is_dataclass(actual_type):
-                    init_kwargs[field.name] = self._dict_to_dataclass(actual_type, field_value)  # type: ignore
+                    init_kwargs[field.name] = self._dict_to_dataclass(
+                        actual_type, field_value
+                    )  # type: ignore
                 else:
                     # Convert string values to the appropriate type using the field type's constructor
-                    assert callable(actual_type), f"Field type for '{field.name}' is not callable."
+                    assert callable(actual_type), (
+                        f"Field type for '{field.name}' is not callable."
+                    )
                     init_kwargs[field.name] = self._call_type(actual_type, field_value)
         return cls(**init_kwargs)  # type: ignore
-    
+
     def _adjust_field_type(self, field_type: Any) -> Any:
         origin = get_origin(field_type)
         if origin is Union:
@@ -189,8 +226,9 @@ class Schema(Generic[T]):
         if get_origin(field_type) is Optional and get_args(field_type):
             inner_type = get_args(field_type)[0]
             if get_origin(inner_type) in (list, List):
-                raise ValueError(f"Cannot directly call type '{field_type}' for value '{value}'. Please handle list types explicitly.")
-
+                raise ValueError(
+                    f"Cannot directly call type '{field_type}' for value '{value}'. Please handle list types explicitly."
+                )
 
         # Handle optional types
         field_type = self._adjust_field_type(field_type)

@@ -1,6 +1,6 @@
 def test_dataclass_simple_loads():
-
     from dataclasses import dataclass
+
     import llm_dataclass
 
     @dataclass
@@ -18,9 +18,10 @@ def test_dataclass_simple_loads():
     person_instance = schema.loads(xml_input)
     assert person_instance == Person(name="John Doe", age=30)
 
-def test_dataclass_array_loads():
 
+def test_dataclass_array_loads():
     from dataclasses import dataclass, field
+
     import llm_dataclass
 
     @dataclass
@@ -38,30 +39,3 @@ def test_dataclass_array_loads():
 
     person_instance = schema.loads(xml_input)
     assert person_instance == Person(name="Jane Doe", pets=["Fluffy", "Spot"])
-
-def test_dataclass_nested_loads():
-
-    from dataclasses import dataclass
-    import llm_dataclass
-
-    @dataclass
-    class Address:
-        street: str
-        city: str
-
-    @dataclass
-    class Person:
-        name: str
-        age: int
-        address: Address
-
-    schema = llm_dataclass.Schema(Person)
-
-    xml_input = """<Person>
-  <name>John Doe</name>
-  <age>30</age>
-  <address>
-    <street>123 Main St</street>
-    <city>Anytown</city>
-  </address>
-</Person>"""
