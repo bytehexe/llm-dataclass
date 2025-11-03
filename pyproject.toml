@@ -1,0 +1,74 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "llm-dataclass"
+dynamic = ["version"]
+description = 'A dataclass interface for llms'
+readme = "README.md"
+requires-python = ">=3.8"
+license = "MIT"
+keywords = []
+authors = [
+  { name = "Janna Hopp" },
+]
+classifiers = [
+  "Development Status :: 4 - Beta",
+  "Programming Language :: Python",
+  "Programming Language :: Python :: 3.8",
+  "Programming Language :: Python :: 3.9",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Programming Language :: Python :: Implementation :: CPython",
+  "Programming Language :: Python :: Implementation :: PyPy",
+]
+dependencies = [
+  "lxml",
+  "xmltodict",
+]
+
+[project.urls]
+Documentation = "https://github.com/Janna Hopp/llm-dataclass#readme"
+Issues = "https://github.com/Janna Hopp/llm-dataclass/issues"
+Source = "https://github.com/Janna Hopp/llm-dataclass"
+
+[tool.hatch.version]
+path = "src/llm_dataclass/__about__.py"
+
+[tool.hatch.envs.types]
+extra-dependencies = [
+  "mypy>=1.0.0",
+  "pytest",
+]
+[tool.hatch.envs.types.scripts]
+check = "mypy --install-types --non-interactive {args:src/llm_dataclass tests}"
+
+[tool.mypy]
+check_untyped_defs = true
+
+
+[[tool.mypy.overrides]]
+module = ["foobar.*"]
+ignore_missing_imports = true
+
+[tool.coverage.run]
+source_pkgs = ["llm_dataclass", "tests"]
+branch = true
+parallel = true
+omit = [
+  "src/llm_dataclass/__about__.py",
+]
+
+[tool.coverage.paths]
+llm_dataclass = ["src/llm_dataclass", "*/llm-dataclass/src/llm_dataclass"]
+tests = ["tests", "*/llm-dataclass/tests"]
+
+[tool.coverage.report]
+exclude_lines = [
+  "no cov",
+  "if __name__ == .__main__.:",
+  "if TYPE_CHECKING:",
+]
+
