@@ -191,14 +191,15 @@ class Schema(Generic[T]):
                     if not isinstance(field_value, list):
                         field_value = [field_value]
                     init_kwargs[field.name] = [
-                        self._dict_to_dataclass(item_type, item)
+                        self._dict_to_dataclass(item_type, item)  # type: ignore
                         if dataclasses.is_dataclass(item_type)
                         else self._call_type(item_type, item)  # type: ignore
                         for item in field_value
                     ]
                 elif dataclasses.is_dataclass(actual_type):
                     init_kwargs[field.name] = self._dict_to_dataclass(
-                        actual_type, field_value
+                        actual_type,
+                        field_value,  # type: ignore
                     )  # type: ignore
                 else:
                     # Convert string values to the appropriate type using the field type's constructor
