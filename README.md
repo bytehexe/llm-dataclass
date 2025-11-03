@@ -284,6 +284,7 @@ The library supports the following Python types:
 
 To ensure robust XML parsing, the library has some intentional limitations:
 
+- **No XML attributes**: XML attributes are not supported - only XML elements are parsed
 - **No nested lists**: `List[List[T]]` is not supported
 - **No optional lists**: `Optional[List[T]]` is not supported (use `List[T]` with empty list handling)
 - **No list of optionals**: `List[Optional[T]]` is not supported
