@@ -263,3 +263,5 @@ class Schema(Generic[T]):
             return _parse_bool(value)
 
         return field_type(value)
+
+__all__ = ["Schema"]
