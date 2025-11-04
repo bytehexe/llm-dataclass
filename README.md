@@ -296,7 +296,7 @@ These limitations help prevent ambiguous XML structures and parsing edge cases.
 
 ## Examples
 
-You can find more examples in the [examples](examples/examples.md) section of the repository, demonstrating various use cases and features of the `llm-dataclass` library.
+You can find more examples in the [examples](https://github.com/bytehexe/llm-dataclass/blob/main/examples/examples.md) section of the repository, demonstrating various use cases and features of the `llm-dataclass` library.
 
 ## Contributing
 
