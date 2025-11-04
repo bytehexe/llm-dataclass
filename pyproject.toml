@@ -43,7 +43,7 @@ fallback-version = "0.0.0"
 local_scheme = "no-local-version"
 
 [tool.hatch.build.hooks.vcs]
-version-file = "src/llm-dataclass/__about__.py"
+version-file = "src/llm_dataclass/__about__.py"
 
 [tool.hatch.envs.types]
 extra-dependencies = [
