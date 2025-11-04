@@ -1,5 +1,5 @@
 [build-system]
-requires = ["hatchling"]
+requires = ["hatchling", "hatch-vcs"]
 build-backend = "hatchling.build"
 
 [project]
@@ -34,7 +34,16 @@ Issues = "https://github.com/bytehexe/llm-dataclass/issues"
 Source = "https://github.com/bytehexe/llm-dataclass"
 
 [tool.hatch.version]
-path = "src/llm_dataclass/__about__.py"
+source = "vcs"
+
+[tool.hatch.version.vcs]
+fallback-version = "0.0.0"
+
+[tool.hatch.version.raw-options]
+local_scheme = "no-local-version"
+
+[tool.hatch.build.hooks.vcs]
+version-file = "src/mkmapdiary/__about__.py"
 
 [tool.hatch.envs.types]
 extra-dependencies = [
