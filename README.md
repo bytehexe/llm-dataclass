@@ -280,6 +280,8 @@ The library supports the following Python types:
 - **Nested dataclasses**: Any dataclass type
 - **Custom types**: Any type with a constructor that accepts a string
 
+**Convenience Wrappers**: The library also provides simple wrapper dataclasses (`StrWrapper`, `IntWrapper`, `FloatWrapper`, `BoolWrapper`) for scenarios where you need to wrap primitive values in a root XML element.
+
 ## Limitations
 
 To ensure robust XML parsing, the library has some intentional limitations:

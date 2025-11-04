@@ -16,6 +16,9 @@ from typing import (
 
 import xmltodict
 
+# Import wrapper classes
+from .wrappers import BoolWrapper, FloatWrapper, IntWrapper, StrWrapper
+
 if TYPE_CHECKING:
     from _typeshed import DataclassInstance
 
@@ -264,4 +267,5 @@ class Schema(Generic[T]):
 
         return field_type(value)
 
-__all__ = ["Schema"]
+
+__all__ = ["Schema", "StrWrapper", "IntWrapper", "FloatWrapper", "BoolWrapper"]
