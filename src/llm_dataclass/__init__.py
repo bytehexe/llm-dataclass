@@ -1,4 +1,5 @@
 import dataclasses
+import html
 import re
 from typing import (
     TYPE_CHECKING,
@@ -49,6 +50,11 @@ def _parse_bool(value: str) -> bool:
             raise ValueError(f"Cannot convert '{value}' to boolean. Accepted values are: true/false, yes/no, on/off (any casing), 1/0")
 
     raise ValueError(f"Cannot convert {type(value).__name__} to boolean")
+
+
+def _escape_xml(text: str) -> str:
+    """Escape XML special characters in text content using the standard html module."""
+    return html.escape(text, quote=False)
 
 
 def _validate_type_construction(field_type: Any, field_name: str) -> None:
@@ -176,7 +182,7 @@ class Schema(Generic[T]):
                 if isinstance(value, bool):
                     field_value = "true" if value else "false"
                 else:
-                    field_value = str(value)
+                    field_value = _escape_xml(str(value))
             else:
                 field_value = "..."
             return [f"  <{field_name}>{field_value}</{field_name}>"]
