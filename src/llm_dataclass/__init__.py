@@ -143,12 +143,18 @@ class Schema(Generic[T]):
         for field in fields:
             field_name = field.metadata.get("xml", {}).get("name", field.name)
             value = getattr(instance, field.name) if instance else None
-            xml.extend(self._field_example(field.type, field_name, value))
+            xml.extend(
+                self._field_example(field.type, field_name, value, field.metadata)
+            )
         xml.append(f"</{self.root}>")
         return "\n".join(xml)
 
     def _field_example(
-        self, field_type: Any, field_name: str, value: Optional[object]
+        self,
+        field_type: Any,
+        field_name: str,
+        value: Optional[object],
+        metadata: Any = None,
     ) -> List[str]:
         origin = get_origin(field_type)
 
@@ -160,7 +166,7 @@ class Schema(Generic[T]):
                 # Extract the non-None type
                 non_none_type = args[0] if args[1] is type(None) else args[1]
                 # Recursively handle the non-None type
-                return self._field_example(non_none_type, field_name, value)
+                return self._field_example(non_none_type, field_name, value, metadata)
             else:
                 # This should not happen due to validation in __init__, but handle gracefully
                 raise ValueError(
@@ -173,7 +179,7 @@ class Schema(Generic[T]):
             xml = []
             assert isinstance(items, list), f"Expected a list for field '{field_name}'"
             for item in items:
-                xml.extend(self._field_example(item_type, field_name, item))
+                xml.extend(self._field_example(item_type, field_name, item, None))
             return xml
 
         elif dataclasses.is_dataclass(field_type):
@@ -189,6 +195,12 @@ class Schema(Generic[T]):
                 else:
                     field_value = _escape_xml(str(value))
             else:
+                # Check if show_placeholder is False in metadata
+                if (
+                    metadata
+                    and metadata.get("xml", {}).get("show_placeholder") is False
+                ):
+                    return []
                 field_value = "..."
             return [f"  <{field_name}>{field_value}</{field_name}>"]
 

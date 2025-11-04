@@ -1,8 +1,9 @@
-from typing import TypeVar, TYPE_CHECKING, List
-from dataclasses import dataclass, field
-import llm_dataclass
-from textwrap import dedent, indent
 import pathlib
+from dataclasses import dataclass, field
+from textwrap import dedent
+from typing import TYPE_CHECKING, List, TypeVar
+
+import llm_dataclass
 
 if TYPE_CHECKING:
     from _typeshed import DataclassInstance
@@ -13,7 +14,7 @@ else:
 def ask_ollama(prompt: str, model: str, image: pathlib.Path, schema: llm_dataclass.Schema[T], **params) -> T:
     """
     Ask a question to Ollama and parse the response using the provided schema.
-    
+
     Args:
         prompt: The question to ask
         model: The Ollama model to use for the chat
@@ -25,9 +26,9 @@ def ask_ollama(prompt: str, model: str, image: pathlib.Path, schema: llm_datacla
         import ollama
     except ImportError:
         raise ImportError("The 'ollama' package is required to use this function. Please install it via 'pip install ollama'.")
-    
+
     example = schema.dumps()
-    prompt = prompt + '\n' + dedent(f"""
+    prompt = prompt + '\n' + dedent("""
     Please resond with an XML object containing the answer.
     Example Response:
     """).strip() + '\n' + example
@@ -64,7 +65,7 @@ if __name__ == "__main__":
 
     schema = llm_dataclass.Schema(Metadata, root="metadata")
 
-    question = dedent(f"""
+    question = dedent("""
     Can you output the metadata for the content of this image?
     """).strip()
 
@@ -106,7 +107,7 @@ Received response from Ollama:
 </metadata>
 ```
 
-Please note that the date provided is an approximation based on historical records and interpretations. The actual creation date of the Mona Lisa may vary slightly depending on the specific interpretation of its creation by art historians. 
+Please note that the date provided is an approximation based on historical records and interpretations. The actual creation date of the Mona Lisa may vary slightly depending on the specific interpretation of its creation by art historians.
 
 Final Result:
 Question: Can you output the metadata for the content of this image?

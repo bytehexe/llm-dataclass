@@ -19,6 +19,7 @@ A Python library that provides a dataclass interface for working with XML schema
   - [Working with Lists](#working-with-lists)
   - [Nested Dataclasses](#nested-dataclasses)
   - [Optional Fields](#optional-fields)
+    - [Controlling Placeholder Display](#controlling-placeholder-display)
   - [Custom XML Field Names](#custom-xml-field-names)
   - [Handling Extra Data](#handling-extra-data)
 - [Type Support](#type-support)
@@ -34,7 +35,8 @@ A Python library that provides a dataclass interface for working with XML schema
 - 🏗️ **Nested Structure Support**: Handle complex nested dataclass structures
 - 📋 **List/Array Support**: Work with lists of primitive types and dataclass objects
 - ⚡ **Type Safety**: Leverages Python's type hints for validation and parsing
-- 🎯 **LLM-Friendly**: Designed specifically for LLM prompt engineering and response parsing
+- �️ **Flexible Placeholders**: Control placeholder visibility for optional fields in generated templates
+- �🎯 **LLM-Friendly**: Designed specifically for LLM prompt engineering and response parsing
 
 ## Installation
 
@@ -247,6 +249,55 @@ class User:
 
 schema = llm_dataclass.Schema(User)
 ```
+
+#### Controlling Placeholder Display
+
+By default, optional fields with `None` values show placeholders (`...`) in generated XML templates. You can control this behavior using the `show_placeholder` metadata option:
+
+```python
+from dataclasses import dataclass, field
+from typing import Optional
+
+@dataclass
+class UserProfile:
+    username: str
+    # Default behavior - shows placeholder when None
+    email: Optional[str] = None
+    # Explicit placeholder - same as default
+    phone: Optional[str] = field(default=None, metadata={"xml": {"show_placeholder": True}})
+    # Hide placeholder when None
+    bio: Optional[str] = field(default=None, metadata={"xml": {"show_placeholder": False}})
+
+schema = llm_dataclass.Schema(UserProfile)
+
+# Generate template with mixed placeholder behavior
+template = schema.dumps()
+print(template)
+# Output:
+# <UserProfile>
+#   <username>...</username>
+#   <email>...</email>
+#   <phone>...</phone>
+# </UserProfile>
+# Note: 'bio' field is omitted since show_placeholder=False
+
+# When field has actual value, show_placeholder setting is ignored
+user = UserProfile(username="john_doe", bio="Software engineer")
+xml_output = schema.dumps(user)
+print(xml_output)
+# Output:
+# <UserProfile>
+#   <username>john_doe</username>
+#   <email>...</email>
+#   <phone>...</phone>
+#   <bio>Software engineer</bio>
+# </UserProfile>
+```
+
+**Use cases for `show_placeholder: False`**:
+- **Cleaner LLM prompts**: Reduce template clutter by hiding optional fields
+- **Conditional fields**: Only show fields in templates when they have meaningful values
+- **Progressive disclosure**: Generate minimal schemas that only include essential fields
 
 ### Custom XML Field Names
 
