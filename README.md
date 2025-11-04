@@ -294,6 +294,10 @@ To ensure robust XML parsing, the library has some intentional limitations:
 
 These limitations help prevent ambiguous XML structures and parsing edge cases.
 
+## Examples
+
+You can find more examples in the [examples](examples/examples.md) section of the repository, demonstrating various use cases and features of the `llm-dataclass` library.
+
 ## Contributing
 
 Contributions are welcome! Please feel free to submit a Pull Request. For major changes, please open an issue first to discuss what you would like to change.
