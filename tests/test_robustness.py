@@ -54,7 +54,7 @@ def test_optional_field_missing() -> None:
     assert person_without_nickname == Person(name="Bob", nickname=None)
 
 
-def optional_dataclass_field_dumping():
+def test_optional_dataclass_field_dumping() -> None:
     @dataclass
     class Person:
         name: str
@@ -71,7 +71,7 @@ def optional_dataclass_field_dumping():
     assert schema.dumps(person_instance) == expected_schema
 
 
-def optional_dataclass_field_loading():
+def test_optional_dataclass_field_loading() -> None:
     @dataclass
     class Person:
         name: str
@@ -87,7 +87,7 @@ def optional_dataclass_field_loading():
     assert person_instance == Person(name="John Doe", nickname="Johnny")
 
 
-def optional_dataclass_field_loading_missing():
+def test_optional_dataclass_field_loading_missing() -> None:
     @dataclass
     class Person:
         name: str

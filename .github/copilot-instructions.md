@@ -1,5 +1,7 @@
 # Testing the code
 
+IMPORTANT: Do not run tests yourself! Use these commands:
+
 ## Running the unit tests
 
 To run the unit tests for the `llm_dataclass` package, you can use the following command in your terminal:

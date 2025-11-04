@@ -34,6 +34,23 @@ def find_document(xml: str, root: str) -> str:
         raise ValueError(f"Tag <{root}> not found in the provided XML.")
 
 
+def _parse_bool(value: str) -> bool:
+    """Parse boolean value from string with flexible input formats."""
+    if isinstance(value, bool):
+        return value
+
+    if isinstance(value, str):
+        value_lower = value.lower().strip()
+        if value_lower in ("true", "yes", "on", "1"):
+            return True
+        elif value_lower in ("false", "no", "off", "0"):
+            return False
+        else:
+            raise ValueError(f"Cannot convert '{value}' to boolean. Accepted values are: true/false, yes/no, on/off (any casing), 1/0")
+
+    raise ValueError(f"Cannot convert {type(value).__name__} to boolean")
+
+
 def _validate_type_construction(field_type: Any, field_name: str) -> None:
     """Validate that type constructions are supported (no nested Optional/List combinations)."""
     origin = get_origin(field_type)
@@ -89,7 +106,7 @@ def _validate_type_construction(field_type: Any, field_name: str) -> None:
 
 
 class Schema(Generic[T]):
-    def __init__(self, dataclass_type: Type[T], root=None):
+    def __init__(self, dataclass_type: Type[T], root: Optional[str] = None) -> None:
         assert dataclasses.is_dataclass(dataclass_type), (
             "Provided type is not a dataclass."
         )
@@ -155,7 +172,13 @@ class Schema(Generic[T]):
             return [f"  {line}" for line in example_xml.splitlines()]
 
         else:
-            field_value = str(value) if value is not None else "..."
+            if value is not None:
+                if isinstance(value, bool):
+                    field_value = "true" if value else "false"
+                else:
+                    field_value = str(value)
+            else:
+                field_value = "..."
             return [f"  <{field_name}>{field_value}</{field_name}>"]
 
     def loads(self, xml: str) -> T:
@@ -228,5 +251,9 @@ class Schema(Generic[T]):
 
         # Handle optional types
         field_type = self._adjust_field_type(field_type)
+
+        # Special handling for boolean types
+        if field_type is bool:
+            return _parse_bool(value)
 
         return field_type(value)
