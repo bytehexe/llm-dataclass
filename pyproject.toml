@@ -47,6 +47,7 @@ check = "mypy --install-types --non-interactive {args:src/llm_dataclass tests}"
 [tool.hatch.envs.default]
 extra-dependencies = [
   "ruff>=0.1.0",
+  "ollama",
 ]
 
 [tool.hatch.envs.default.scripts]

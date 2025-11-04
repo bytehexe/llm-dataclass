@@ -1,4 +1,3 @@
-
 import pytest
 
 import llm_dataclass
@@ -31,7 +30,9 @@ def test_bool_deserialization_true_false() -> None:
     for test_value, expected_result in zip(test_cases, expected):
         xml_input = f"<bool><value>{test_value}</value></bool>"
         result = schema.loads(xml_input)
-        assert result == llm_dataclass.BoolWrapper(value=expected_result), f"Failed for {test_value}"
+        assert result == llm_dataclass.BoolWrapper(value=expected_result), (
+            f"Failed for {test_value}"
+        )
 
 
 def test_bool_deserialization_yes_no() -> None:
@@ -44,7 +45,9 @@ def test_bool_deserialization_yes_no() -> None:
     for test_value, expected_result in zip(test_cases, expected):
         xml_input = f"<bool><value>{test_value}</value></bool>"
         result = schema.loads(xml_input)
-        assert result == llm_dataclass.BoolWrapper(value=expected_result), f"Failed for {test_value}"
+        assert result == llm_dataclass.BoolWrapper(value=expected_result), (
+            f"Failed for {test_value}"
+        )
 
 
 def test_bool_deserialization_on_off() -> None:
@@ -57,7 +60,9 @@ def test_bool_deserialization_on_off() -> None:
     for test_value, expected_result in zip(test_cases, expected):
         xml_input = f"<bool><value>{test_value}</value></bool>"
         result = schema.loads(xml_input)
-        assert result == llm_dataclass.BoolWrapper(value=expected_result), f"Failed for {test_value}"
+        assert result == llm_dataclass.BoolWrapper(value=expected_result), (
+            f"Failed for {test_value}"
+        )
 
 
 def test_bool_deserialization_numeric() -> None:
@@ -70,7 +75,9 @@ def test_bool_deserialization_numeric() -> None:
     for test_value, expected_result in zip(test_cases, expected):
         xml_input = f"<bool><value>{test_value}</value></bool>"
         result = schema.loads(xml_input)
-        assert result == llm_dataclass.BoolWrapper(value=expected_result), f"Failed for {test_value}"
+        assert result == llm_dataclass.BoolWrapper(value=expected_result), (
+            f"Failed for {test_value}"
+        )
 
 
 def test_bool_deserialization_whitespace() -> None:
@@ -83,7 +90,9 @@ def test_bool_deserialization_whitespace() -> None:
     for test_value, expected_result in zip(test_cases, expected):
         xml_input = f"<bool><value>{test_value}</value></bool>"
         result = schema.loads(xml_input)
-        assert result == llm_dataclass.BoolWrapper(value=expected_result), f"Failed for '{test_value}'"
+        assert result == llm_dataclass.BoolWrapper(value=expected_result), (
+            f"Failed for '{test_value}'"
+        )
 
 
 def test_bool_deserialization_invalid() -> None:

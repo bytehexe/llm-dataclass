@@ -1,4 +1,3 @@
-
 import llm_dataclass
 
 
@@ -10,6 +9,7 @@ def test_str_load() -> None:
     result = schema.loads(xml_input)
     assert result == llm_dataclass.StrWrapper(value="Hello, World!")
 
+
 def test_str_dump() -> None:
     schema = llm_dataclass.Schema(llm_dataclass.StrWrapper, root="str")
 
@@ -19,6 +19,7 @@ def test_str_dump() -> None:
     expected_xml = "<str>\n  <value>Hello, World!</value>\n</str>"
     assert xml_output == expected_xml
 
+
 def test_int_load() -> None:
     schema = llm_dataclass.Schema(llm_dataclass.IntWrapper, root="int")
 
@@ -26,6 +27,7 @@ def test_int_load() -> None:
 
     result = schema.loads(xml_input)
     assert result == llm_dataclass.IntWrapper(value=42)
+
 
 def test_int_dump() -> None:
     schema = llm_dataclass.Schema(llm_dataclass.IntWrapper, root="int")
@@ -36,6 +38,7 @@ def test_int_dump() -> None:
     expected_xml = "<int>\n  <value>42</value>\n</int>"
     assert xml_output == expected_xml
 
+
 def test_float_load() -> None:
     schema = llm_dataclass.Schema(llm_dataclass.FloatWrapper, root="float")
 
@@ -43,6 +46,7 @@ def test_float_load() -> None:
 
     result = schema.loads(xml_input)
     assert result == llm_dataclass.FloatWrapper(value=3.14)
+
 
 def test_float_dump() -> None:
     schema = llm_dataclass.Schema(llm_dataclass.FloatWrapper, root="float")
@@ -53,6 +57,7 @@ def test_float_dump() -> None:
     expected_xml = "<float>\n  <value>3.14</value>\n</float>"
     assert xml_output == expected_xml
 
+
 def test_bool_load() -> None:
     schema = llm_dataclass.Schema(llm_dataclass.BoolWrapper, root="bool")
 
@@ -60,6 +65,7 @@ def test_bool_load() -> None:
 
     result = schema.loads(xml_input)
     assert result == llm_dataclass.BoolWrapper(value=True)
+
 
 def test_bool_dump() -> None:
     schema = llm_dataclass.Schema(llm_dataclass.BoolWrapper, root="bool")
@@ -70,18 +76,34 @@ def test_bool_dump() -> None:
     expected_xml = "<bool>\n  <value>true</value>\n</bool>"
     assert xml_output == expected_xml
 
+
 def test_load_bool_variants() -> None:
     schema = llm_dataclass.Schema(llm_dataclass.BoolWrapper, root="bool")
 
     true_variants = ["true", "True", "TRUE", "yes", "Yes", "YES", "on", "On", "ON", "1"]
-    false_variants = ["false", "False", "FALSE", "no", "No", "NO", "off", "Off", "OFF", "0"]
+    false_variants = [
+        "false",
+        "False",
+        "FALSE",
+        "no",
+        "No",
+        "NO",
+        "off",
+        "Off",
+        "OFF",
+        "0",
+    ]
 
     for variant in true_variants:
         xml_input = f"<bool><value>{variant}</value></bool>"
         result = schema.loads(xml_input)
-        assert result == llm_dataclass.BoolWrapper(value=True), f"Failed for true variant: {variant}"
+        assert result == llm_dataclass.BoolWrapper(value=True), (
+            f"Failed for true variant: {variant}"
+        )
 
     for variant in false_variants:
         xml_input = f"<bool><value>{variant}</value></bool>"
         result = schema.loads(xml_input)
-        assert result == llm_dataclass.BoolWrapper(value=False), f"Failed for false variant: {variant}"
+        assert result == llm_dataclass.BoolWrapper(value=False), (
+            f"Failed for false variant: {variant}"
+        )

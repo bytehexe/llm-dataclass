@@ -11,22 +11,26 @@ from dataclasses import dataclass
 @dataclass
 class StrWrapper:
     """A dataclass wrapper for string values."""
+
     value: str
 
 
 @dataclass
 class IntWrapper:
     """A dataclass wrapper for integer values."""
+
     value: int
 
 
 @dataclass
 class FloatWrapper:
     """A dataclass wrapper for float values."""
+
     value: float
 
 
 @dataclass
 class BoolWrapper:
     """A dataclass wrapper for boolean values."""
+
     value: bool

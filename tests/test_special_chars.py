@@ -18,6 +18,7 @@ def test_dump_brackets_in_field_values() -> None:
     message_instance = Message(content="Hello <World>!")
     assert schema.dumps(message_instance) == expected_schema
 
+
 def test_dump_ampersand_in_field_values() -> None:
     @dataclass
     class Message:

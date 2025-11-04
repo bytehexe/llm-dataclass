@@ -50,7 +50,9 @@ def _parse_bool(value: str) -> bool:
         elif value_lower in ("false", "no", "off", "0"):
             return False
         else:
-            raise ValueError(f"Cannot convert '{value}' to boolean. Accepted values are: true/false, yes/no, on/off (any casing), 1/0")
+            raise ValueError(
+                f"Cannot convert '{value}' to boolean. Accepted values are: true/false, yes/no, on/off (any casing), 1/0"
+            )
 
     raise ValueError(f"Cannot convert {type(value).__name__} to boolean")
 
