@@ -30,9 +30,8 @@ dependencies = [
 ]
 
 [project.urls]
-Documentation = "https://github.com/Janna Hopp/llm-dataclass#readme"
-Issues = "https://github.com/Janna Hopp/llm-dataclass/issues"
-Source = "https://github.com/Janna Hopp/llm-dataclass"
+Issues = "https://github.com/bytehexe/llm-dataclass/issues"
+Source = "https://github.com/bytehexe/llm-dataclass"
 
 [tool.hatch.version]
 path = "src/llm_dataclass/__about__.py"
@@ -97,6 +96,7 @@ select = [
     "B",   # flake8-bugbear
     "C4",  # flake8-comprehensions
     "UP",  # pyupgrade
+    "ANN", # annotations
 ]
 ignore = [
     "E501",  # line too long, handled by black
