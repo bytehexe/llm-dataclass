@@ -1,4 +1,4 @@
-def test_dataclass_simple_loads():
+def test_dataclass_simple_loads() -> None:
     from dataclasses import dataclass
 
     import llm_dataclass
@@ -19,7 +19,7 @@ def test_dataclass_simple_loads():
     assert person_instance == Person(name="John Doe", age=30)
 
 
-def test_dataclass_array_loads():
+def test_dataclass_array_loads() -> None:
     from dataclasses import dataclass, field
 
     import llm_dataclass

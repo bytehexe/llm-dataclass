@@ -193,7 +193,7 @@ class Schema(Generic[T]):
                     ]
                 elif dataclasses.is_dataclass(actual_type):
                     init_kwargs[field.name] = self._dict_to_dataclass(
-                        actual_type,
+                        actual_type,  # type: ignore
                         field_value,  # type: ignore
                     )  # type: ignore
                 else:

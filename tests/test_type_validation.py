@@ -46,7 +46,7 @@ class InvalidNestedList:
     matrix: List[List[str]]
 
 
-def test_valid_constructions():
+def test_valid_constructions() -> None:
     """Test that valid type constructions work."""
     print("Testing valid constructions...")
 
@@ -61,7 +61,7 @@ def test_valid_constructions():
     print("✓ ValidList passed")
 
 
-def test_invalid_constructions():
+def test_invalid_constructions() -> None:
     """Test that invalid type constructions are rejected."""
 
     # Test Optional[List[T]] - should fail

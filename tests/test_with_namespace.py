@@ -4,7 +4,7 @@ from textwrap import dedent
 import llm_dataclass
 
 
-def test_loads_dataclass_with_namespace():
+def test_loads_dataclass_with_namespace() -> None:
     # XML namespaces are not directly supported,
     # but we should be able to parse the prefixes correctly.
 
@@ -24,7 +24,7 @@ def test_loads_dataclass_with_namespace():
     assert item == Item(id="123", value="Test Item")
 
 
-def test_dumps_dataclass_with_namespace():
+def test_dumps_dataclass_with_namespace() -> None:
     @dataclass
     class Item:
         id: str

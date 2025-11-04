@@ -4,7 +4,7 @@ from textwrap import dedent
 import llm_dataclass
 
 
-def test_dataclass_nested():
+def test_dataclass_nested() -> None:
     @dataclass
     class Address:
         street: str
@@ -30,7 +30,7 @@ def test_dataclass_nested():
     assert schema.dumps() == expected_schema
 
 
-def test_dataclass_nested_with_instance():
+def test_dataclass_nested_with_instance() -> None:
     @dataclass
     class Address:
         street: str
@@ -59,7 +59,7 @@ def test_dataclass_nested_with_instance():
     assert schema.dumps(person_instance) == expected_schema
 
 
-def test_dataclass_nested_array():
+def test_dataclass_nested_array() -> None:
     @dataclass
     class Pet:
         name: str
@@ -87,7 +87,7 @@ def test_dataclass_nested_array():
     assert schema.dumps() == expected_schema
 
 
-def test_dataclass_nested_array_with_instance():
+def test_dataclass_nested_array_with_instance() -> None:
     @dataclass
     class Pet:
         name: str

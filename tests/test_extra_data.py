@@ -3,7 +3,7 @@ from dataclasses import dataclass
 import llm_dataclass
 
 
-def test_extra_data_handling():
+def test_extra_data_handling() -> None:
     @dataclass
     class Person:
         name: str
@@ -21,7 +21,7 @@ def test_extra_data_handling():
     assert person == Person(name="John Doe", age=30)
 
 
-def test_extra_data_with_attributes():
+def test_extra_data_with_attributes() -> None:
     @dataclass
     class Item:
         id: str

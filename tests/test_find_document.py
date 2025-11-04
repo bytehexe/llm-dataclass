@@ -5,7 +5,7 @@ import pytest
 from llm_dataclass import find_document
 
 
-def test_find_document():
+def test_find_document() -> None:
     xml = """<root>
     <child>Content</child>
     </root>"""
@@ -14,7 +14,7 @@ def test_find_document():
     assert re_expected.fullmatch(result)
 
 
-def test_find_document_in_text():
+def test_find_document_in_text() -> None:
     xml = """
     This is your document:
     <root>
@@ -28,7 +28,7 @@ def test_find_document_in_text():
     assert re_expected.fullmatch(result)
 
 
-def test_find_document_not_found():
+def test_find_document_not_found() -> None:
     xml = """<root>
     <child>Content</child>
     </root>"""
@@ -40,7 +40,7 @@ def test_find_document_not_found():
         raise AssertionError("Expected ValueError was not raised.")
 
 
-def test_find_document_with_attributes():
+def test_find_document_with_attributes() -> None:
     xml = """<root attr="value">
     <child>Content</child>
     </root>"""
@@ -49,7 +49,7 @@ def test_find_document_with_attributes():
     assert re_expected.fullmatch(result)
 
 
-def test_find_document_multiple_tags():
+def test_find_document_multiple_tags() -> None:
     xml = """<root>
     <child>Content</child>
     </root>

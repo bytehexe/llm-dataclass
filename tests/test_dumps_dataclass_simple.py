@@ -4,7 +4,7 @@ from textwrap import dedent
 import llm_dataclass
 
 
-def test_dataclass_simple():
+def test_dataclass_simple() -> None:
     @dataclass
     class Person:
         name: str
@@ -20,7 +20,7 @@ def test_dataclass_simple():
     assert schema.dumps() == expected_schema
 
 
-def test_dataclass_simple_with_instance():
+def test_dataclass_simple_with_instance() -> None:
     @dataclass
     class Person:
         name: str
@@ -36,7 +36,7 @@ def test_dataclass_simple_with_instance():
     assert schema.dumps(Person(name="John Doe", age=30)) == expected_schema
 
 
-def test_dataclass_array():
+def test_dataclass_array() -> None:
     @dataclass
     class Person:
         name: str

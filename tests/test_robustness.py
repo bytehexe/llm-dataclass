@@ -5,7 +5,7 @@ from typing import List, Optional
 import llm_dataclass
 
 
-def test_list_type():
+def test_list_type() -> None:
     @dataclass
     class Person:
         name: str
@@ -23,7 +23,7 @@ def test_list_type():
     assert person_instance == Person(name="Alice", scores=[85, 90, 95])
 
 
-def test_optional_field():
+def test_optional_field() -> None:
     @dataclass
     class Person:
         name: str
@@ -39,7 +39,7 @@ def test_optional_field():
     assert person_with_nickname == Person(name="Bob", nickname="Bobby")
 
 
-def test_optional_field_missing():
+def test_optional_field_missing() -> None:
     @dataclass
     class Person:
         name: str
@@ -111,7 +111,7 @@ def optional_dataclass_field_loading_missing():
 # now same for dumps
 
 
-def test_list_dump():
+def test_list_dump() -> None:
     @dataclass
     class Person:
         name: str
@@ -128,7 +128,7 @@ def test_list_dump():
     assert schema.dumps() == expected_schema
 
 
-def test_list_dump_with_instance():
+def test_list_dump_with_instance() -> None:
     @dataclass
     class Person:
         name: str
@@ -147,7 +147,7 @@ def test_list_dump_with_instance():
     assert schema.dumps(person_instance) == expected_schema
 
 
-def test_optional_field_dump():
+def test_optional_field_dump() -> None:
     @dataclass
     class Person:
         name: str
@@ -163,7 +163,7 @@ def test_optional_field_dump():
     assert schema.dumps() == expected_schema
 
 
-def test_optional_dataclass_nested_dumping():
+def test_optional_dataclass_nested_dumping() -> None:
     @dataclass
     class Address:
         street: str
