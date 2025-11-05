@@ -65,6 +65,15 @@ format = "ruff format {args:src/llm_dataclass tests}"
 format-check = "ruff format --check {args:src/llm_dataclass tests}"
 lint-fix = "ruff check --fix {args:src/llm_dataclass tests}"
 
+[tool.hatch.envs.hatch-test]
+extra-dependencies = [
+  "pytest",
+  "pytest-cov",
+]
+
+[[tool.hatch.envs.hatch-test.matrix]]
+python = ["3.8", "3.9", "3.10", "3.11", "3.12"]
+
 [tool.mypy]
 check_untyped_defs = true
 

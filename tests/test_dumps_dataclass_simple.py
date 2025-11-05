@@ -1,3 +1,5 @@
+import pytest
+import sys
 from dataclasses import dataclass, field
 from textwrap import dedent
 
@@ -36,6 +38,7 @@ def test_dataclass_simple_with_instance() -> None:
     assert schema.dumps(Person(name="John Doe", age=30)) == expected_schema
 
 
+@pytest.mark.skipif(sys.version_info < (3, 9), reason="Generic list syntax (list[str]) requires Python 3.9+")
 def test_dataclass_array() -> None:
     @dataclass
     class Person:
