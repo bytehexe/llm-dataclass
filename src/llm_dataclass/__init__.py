@@ -270,12 +270,16 @@ class Schema(Generic[T]):
         assert callable(field_type), f"Field type '{field_type}' is not callable."
 
         # Raise error if field_type is Optional[List] or similar without proper handling
-        if get_origin(field_type) is Optional and get_args(field_type):
-            inner_type = get_args(field_type)[0]
-            if get_origin(inner_type) in (list, List):
-                raise ValueError(
-                    f"Cannot directly call type '{field_type}' for value '{value}'. Please handle list types explicitly."
-                )
+        origin = get_origin(field_type)
+        if origin is Union and get_args(field_type):
+            args = get_args(field_type)
+            # Check if this is Optional[T] (Union[T, None])
+            if len(args) == 2 and type(None) in args:
+                inner_type = args[0] if args[1] is type(None) else args[1]
+                if get_origin(inner_type) in (list, List):
+                    raise ValueError(
+                        f"Cannot directly call type '{field_type}' for value '{value}'. Please handle list types explicitly."
+                    )
 
         # Handle optional types
         field_type = self._adjust_field_type(field_type)
