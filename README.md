@@ -21,6 +21,7 @@ A Python library that provides a dataclass interface for working with XML schema
   - [Optional Fields](#optional-fields)
     - [Controlling Placeholder Display](#controlling-placeholder-display)
   - [Custom XML Field Names](#custom-xml-field-names)
+  - [Custom XML Root Tag](#custom-xml-root-tag)
   - [Handling Extra Data](#handling-extra-data)
 - [Type Support](#type-support)
 - [Limitations](#limitations)
@@ -312,6 +313,27 @@ class Book:
 schema = llm_dataclass.Schema(Book)
 # Will use <author> instead of <author_name> in XML
 ```
+
+### Custom XML Root Tag
+
+Customize the root XML element name using the `XML_ROOT_TAG` class attribute:
+
+```python
+@dataclass
+class Product:
+    XML_ROOT_TAG = "item"  # Custom root tag name
+    name: str
+    price: float
+
+schema = llm_dataclass.Schema(Product)
+xml_output = schema.dumps(Product(name="Widget", price=19.99))
+# Output: <item><name>Widget</name><price>19.99</price></item>
+```
+
+Priority order for root tag selection:
+1. Explicit `root` parameter: `Schema(Product, root="custom")`
+2. `XML_ROOT_TAG` class attribute
+3. Class name (default)
 
 ### Handling Extra Data
 
