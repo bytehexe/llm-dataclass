@@ -131,7 +131,12 @@ class Schema(Generic[T]):
             _validate_type_construction(field.type, field.name)
 
         self.dataclass_type = dataclass_type
-        self.root = root or dataclass_type.__name__
+
+        # Priority order: explicit root parameter, then XML_ROOT_TAG attribute, then class name
+        if root is not None:
+            self.root = root
+        else:
+            self.root = getattr(dataclass_type, 'XML_ROOT_TAG', dataclass_type.__name__)
 
     def dumps(self, instance: Optional[T] = None) -> str:
         """Generate an example XML schema for the dataclass type."""
