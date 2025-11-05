@@ -1,5 +1,6 @@
-import pytest
 import sys
+
+import pytest
 
 
 def test_xml_name_loading() -> None:
@@ -44,7 +45,10 @@ def test_xml_name_dumping() -> None:
     assert schema.dumps(person_instance) == expected_schema
 
 
-@pytest.mark.skipif(sys.version_info < (3, 9), reason="Generic list syntax (list[str]) requires Python 3.9+")
+@pytest.mark.skipif(
+    sys.version_info < (3, 9),
+    reason="Generic list syntax (list[str]) requires Python 3.9+",
+)
 def test_xml_name_loading_dataclass_array() -> None:
     from dataclasses import dataclass, field
 
@@ -67,7 +71,10 @@ def test_xml_name_loading_dataclass_array() -> None:
     assert person_instance == Person(name="Jane Doe", pets=["Fluffy", "Spot"])
 
 
-@pytest.mark.skipif(sys.version_info < (3, 9), reason="Generic list syntax (list[str]) requires Python 3.9+")
+@pytest.mark.skipif(
+    sys.version_info < (3, 9),
+    reason="Generic list syntax (list[str]) requires Python 3.9+",
+)
 def test_xml_name_dumping_dataclass_array() -> None:
     from dataclasses import dataclass, field
     from textwrap import dedent

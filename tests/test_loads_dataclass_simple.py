@@ -1,5 +1,6 @@
-import pytest
 import sys
+
+import pytest
 
 
 def test_dataclass_simple_loads() -> None:
@@ -23,7 +24,10 @@ def test_dataclass_simple_loads() -> None:
     assert person_instance == Person(name="John Doe", age=30)
 
 
-@pytest.mark.skipif(sys.version_info < (3, 9), reason="Generic list syntax (list[str]) requires Python 3.9+")
+@pytest.mark.skipif(
+    sys.version_info < (3, 9),
+    reason="Generic list syntax (list[str]) requires Python 3.9+",
+)
 def test_dataclass_array_loads() -> None:
     from dataclasses import dataclass, field
 

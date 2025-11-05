@@ -1,7 +1,8 @@
-import pytest
 import sys
 from dataclasses import dataclass, field
 from textwrap import dedent
+
+import pytest
 
 import llm_dataclass
 
@@ -61,7 +62,10 @@ def test_dataclass_nested_with_instance() -> None:
     assert schema.dumps(person_instance) == expected_schema
 
 
-@pytest.mark.skipif(sys.version_info < (3, 9), reason="Generic list syntax (list[Pet]) requires Python 3.9+")
+@pytest.mark.skipif(
+    sys.version_info < (3, 9),
+    reason="Generic list syntax (list[Pet]) requires Python 3.9+",
+)
 def test_dataclass_nested_array() -> None:
     @dataclass
     class Pet:
@@ -90,7 +94,10 @@ def test_dataclass_nested_array() -> None:
     assert schema.dumps() == expected_schema
 
 
-@pytest.mark.skipif(sys.version_info < (3, 9), reason="Generic list syntax (list[Pet]) requires Python 3.9+")
+@pytest.mark.skipif(
+    sys.version_info < (3, 9),
+    reason="Generic list syntax (list[Pet]) requires Python 3.9+",
+)
 def test_dataclass_nested_array_with_instance() -> None:
     @dataclass
     class Pet:

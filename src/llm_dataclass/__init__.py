@@ -1,6 +1,7 @@
 import dataclasses
 import html
 import re
+import sys
 from typing import (
     TYPE_CHECKING,
     Any,
@@ -15,6 +16,14 @@ from typing import (
 )
 
 import xmltodict
+
+# Handle Python 3.10+ union types
+if sys.version_info >= (3, 10):
+    import types
+
+    UnionTypes = (Union, types.UnionType)
+else:
+    UnionTypes = (Union,)
 
 # Import wrapper classes
 from .wrappers import BoolWrapper, FloatWrapper, IntWrapper, StrWrapper
@@ -66,8 +75,8 @@ def _validate_type_construction(field_type: Any, field_name: str) -> None:
     """Validate that type constructions are supported (no nested Optional/List combinations)."""
     origin = get_origin(field_type)
 
-    # Handle Optional[T] (which is Union[T, None])
-    if origin is Union:
+    # Handle Optional[T] (which is Union[T, None] or T | None)
+    if origin in UnionTypes:
         args = get_args(field_type)
         # For Optional[T], args will be (T, type(None))
         if len(args) == 2 and type(None) in args:
@@ -98,7 +107,7 @@ def _validate_type_construction(field_type: Any, field_name: str) -> None:
             item_origin = get_origin(item_type)
 
             # Forbid List[Optional[T]]
-            if item_origin is Union:
+            if item_origin in UnionTypes:
                 item_args = get_args(item_type)
                 if len(item_args) == 2 and type(None) in item_args:
                     raise ValueError(
@@ -136,7 +145,7 @@ class Schema(Generic[T]):
         if root is not None:
             self.root = root
         else:
-            self.root = getattr(dataclass_type, 'XML_ROOT_TAG', dataclass_type.__name__)
+            self.root = getattr(dataclass_type, "XML_ROOT_TAG", dataclass_type.__name__)
 
     def dumps(self, instance: Optional[T] = None) -> str:
         """Generate an example XML schema for the dataclass type."""
@@ -163,8 +172,8 @@ class Schema(Generic[T]):
     ) -> List[str]:
         origin = get_origin(field_type)
 
-        # Handle Optional[T] (which is Union[T, None])
-        if origin is Union:
+        # Handle Optional[T] (which is Union[T, None] or T | None)
+        if origin in UnionTypes:
             args = get_args(field_type)
             # For Optional[T], args will be (T, type(None))
             if len(args) == 2 and type(None) in args:
@@ -223,9 +232,9 @@ class Schema(Generic[T]):
             if field_value is not None:
                 origin = get_origin(field.type)
 
-                # Handle Optional[T] (which is Union[T, None])
+                # Handle Optional[T] (which is Union[T, None] or T | None)
                 actual_type = field.type
-                if origin is Union:
+                if origin in UnionTypes:
                     args = get_args(field.type)
                     if len(args) == 2 and type(None) in args:
                         # Extract the non-None type for Optional[T]
@@ -257,7 +266,7 @@ class Schema(Generic[T]):
 
     def _adjust_field_type(self, field_type: Any) -> Any:
         origin = get_origin(field_type)
-        if origin is Union:
+        if origin in UnionTypes:
             args = get_args(field_type)
             non_none_args = [arg for arg in args if arg is not type(None)]
             if len(non_none_args) == 1:
@@ -271,9 +280,9 @@ class Schema(Generic[T]):
 
         # Raise error if field_type is Optional[List] or similar without proper handling
         origin = get_origin(field_type)
-        if origin is Union and get_args(field_type):
+        if origin in UnionTypes and get_args(field_type):
             args = get_args(field_type)
-            # Check if this is Optional[T] (Union[T, None])
+            # Check if this is Optional[T] (Union[T, None] or T | None)
             if len(args) == 2 and type(None) in args:
                 inner_type = args[0] if args[1] is type(None) else args[1]
                 if get_origin(inner_type) in (list, List):

@@ -1,11 +1,15 @@
-import pytest
 import sys
 from dataclasses import dataclass, field
+
+import pytest
+
 import llm_dataclass
 
-@pytest.mark.skipif(sys.version_info < (3, 10), reason="Union syntax (int | None) requires Python 3.10+")
-def test_or() -> None:
 
+@pytest.mark.skipif(
+    sys.version_info < (3, 10), reason="Union syntax (int | None) requires Python 3.10+"
+)
+def test_or() -> None:
     @dataclass
     class OrExample:
         value: int | None = field(default=None)

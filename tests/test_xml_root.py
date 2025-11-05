@@ -5,7 +5,6 @@ import llm_dataclass
 
 
 def test_xml_root() -> None:
-
     @dataclass
     class ItemClass:
         XML_ROOT_TAG = "item"
