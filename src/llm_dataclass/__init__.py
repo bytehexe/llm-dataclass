@@ -152,24 +152,61 @@ class Schema(Generic[T]):
         assert instance is None or isinstance(instance, self.dataclass_type), (
             "Provided instance is not of the correct dataclass type."
         )
-        fields = dataclasses.fields(self.dataclass_type)
-        xml = [f"<{self.root}>"]
+
+        # Convert dataclass to dictionary structure
+        data_dict = self._dataclass_to_dict(self.dataclass_type, instance)
+        root_dict = {self.root: data_dict}
+
+        # Use xmltodict.unparse to generate XML
+        xml_output = xmltodict.unparse(root_dict, full_document=False, pretty=True)
+
+        # Convert tab indentation to 2-space indentation to match existing format
+        xml_output = xml_output.replace("\t", "  ")
+
+        # Fix empty root elements - convert self-closing to open/close with newline
+        if f"<{self.root}></{self.root}>" in xml_output:
+            xml_output = xml_output.replace(
+                f"<{self.root}></{self.root}>", f"<{self.root}>\n</{self.root}>"
+            )
+
+        return xml_output
+
+    def _dataclass_to_dict(self, cls: Type[T], instance: Optional[T]) -> dict:
+        """Convert a dataclass instance to a dictionary suitable for xmltodict.unparse."""
+        result: dict = {}
+        fields = dataclasses.fields(cls)
+
         for field in fields:
             field_name = field.metadata.get("xml", {}).get("name", field.name)
             value = getattr(instance, field.name) if instance else None
-            xml.extend(
-                self._field_example(field.type, field_name, value, field.metadata)
-            )
-        xml.append(f"</{self.root}>")
-        return "\n".join(xml)
 
-    def _field_example(
+            converted_value = self._convert_field_value(
+                field.type, field_name, value, field.metadata
+            )
+
+            # Only add to result if the field should be shown
+            if converted_value is not None:
+                if field_name in result:
+                    # Handle multiple values with same name (for lists)
+                    if not isinstance(result[field_name], list):
+                        result[field_name] = [result[field_name]]
+                    if isinstance(converted_value, list):
+                        result[field_name].extend(converted_value)
+                    else:
+                        result[field_name].append(converted_value)
+                else:
+                    result[field_name] = converted_value
+
+        return result
+
+    def _convert_field_value(
         self,
         field_type: Any,
         field_name: str,
         value: Optional[object],
         metadata: Any = None,
-    ) -> List[str]:
+    ) -> Any:
+        """Convert a field value to the appropriate format for xmltodict.unparse."""
         origin = get_origin(field_type)
 
         # Handle Optional[T] (which is Union[T, None] or T | None)
@@ -180,7 +217,9 @@ class Schema(Generic[T]):
                 # Extract the non-None type
                 non_none_type = args[0] if args[1] is type(None) else args[1]
                 # Recursively handle the non-None type
-                return self._field_example(non_none_type, field_name, value, metadata)
+                return self._convert_field_value(
+                    non_none_type, field_name, value, metadata
+                )
             else:
                 # This should not happen due to validation in __init__, but handle gracefully
                 raise ValueError(
@@ -190,33 +229,34 @@ class Schema(Generic[T]):
         elif origin in (list, List):
             item_type = get_args(field_type)[0]
             items = value if value is not None else [None, None]
-            xml = []
             assert isinstance(items, list), f"Expected a list for field '{field_name}'"
+            converted_items = []
             for item in items:
-                xml.extend(self._field_example(item_type, field_name, item, None))
-            return xml
+                converted_item = self._convert_field_value(
+                    item_type, field_name, item, None
+                )
+                converted_items.append(converted_item)
+            return converted_items
 
         elif dataclasses.is_dataclass(field_type):
-            schema = Schema(field_type, root=field_name)  # type: ignore
-            instance = value if value is not None else None
-            example_xml = schema.dumps(instance)  # type: ignore
-            return [f"  {line}" for line in example_xml.splitlines()]
+            instance_value = value if value is not None else None
+            return self._dataclass_to_dict(field_type, instance_value)  # type: ignore
 
         else:
             if value is not None:
                 if isinstance(value, bool):
-                    field_value = "true" if value else "false"
+                    return "true" if value else "false"
                 else:
-                    field_value = _escape_xml(str(value))
+                    # Don't escape here - xmltodict.unparse will handle escaping
+                    return str(value)
             else:
                 # Check if show_placeholder is False in metadata
                 if (
                     metadata
                     and metadata.get("xml", {}).get("show_placeholder") is False
                 ):
-                    return []
-                field_value = "..."
-            return [f"  <{field_name}>{field_value}</{field_name}>"]
+                    return None  # Don't include this field
+                return "..."
 
     def loads(self, xml: str) -> T:
         """Parse XML string into an instance of the dataclass type."""
