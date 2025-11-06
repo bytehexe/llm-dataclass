@@ -126,7 +126,12 @@ def _validate_type_construction(field_type: Any, field_name: str) -> None:
 
 
 class Schema(Generic[T]):
-    def __init__(self, dataclass_type: Type[T], root: Optional[str] = None) -> None:
+    def __init__(
+        self,
+        dataclass_type: Type[T],
+        root: Optional[str] = None,
+        root_attributes: Optional[dict[str, str]] = None,
+    ) -> None:
         assert dataclasses.is_dataclass(dataclass_type), (
             "Provided type is not a dataclass."
         )
@@ -140,6 +145,7 @@ class Schema(Generic[T]):
             _validate_type_construction(field.type, field.name)
 
         self.dataclass_type = dataclass_type
+        self.root_attributes = root_attributes or {}
 
         # Priority order: explicit root parameter, then XML_ROOT_TAG attribute, then class name
         if root is not None:
@@ -155,6 +161,19 @@ class Schema(Generic[T]):
 
         # Convert dataclass to dictionary structure
         data_dict = self._dataclass_to_dict(self.dataclass_type, instance)
+
+        # Add root attributes if any are specified
+        if self.root_attributes:
+            # xmltodict uses '@' prefix for attributes
+            for attr_name, attr_value in self.root_attributes.items():
+                data_dict[f"@{attr_name}"] = attr_value
+
+        # If the data_dict is empty or only contains attributes, add an empty text node
+        # to force xmltodict to generate open/close tags instead of self-closing tags
+        has_non_attribute_content = any(not key.startswith("@") for key in data_dict.keys())
+        if not has_non_attribute_content:
+            data_dict["#text"] = ""
+
         root_dict = {self.root: data_dict}
 
         # Use xmltodict.unparse to generate XML
@@ -163,11 +182,11 @@ class Schema(Generic[T]):
         # Convert tab indentation to 2-space indentation to match existing format
         xml_output = xml_output.replace("\t", "  ")
 
-        # Fix empty root elements - convert self-closing to open/close with newline
-        if f"<{self.root}></{self.root}>" in xml_output:
-            xml_output = xml_output.replace(
-                f"<{self.root}></{self.root}>", f"<{self.root}>\n</{self.root}>"
-            )
+        # Clean up empty text nodes - remove the empty text content but keep the structure
+        if "#text" in data_dict and data_dict["#text"] == "":
+            # Replace the empty text with a newline for proper formatting
+            xml_output = xml_output.replace(f"<{self.root}", f"<{self.root}")
+            xml_output = xml_output.replace(f"></{self.root}>", f">\n</{self.root}>")
 
         return xml_output
 
